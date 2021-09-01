@@ -14,13 +14,9 @@ device = pydobot.Dobot(port=port, verbose=False)
 
 sqx = 20
 sqy = 20
+sqz = 10
 down = 10
 mid = 0.5
-
-greenPop = 0
-redPop = 0
-bluePop = 0
-yellowPop = 0
 
 def reset():
     device.move_to(300, 0, 120, 90, wait=True)
@@ -30,6 +26,7 @@ def move(dx, dy, dz, wait = True):
     device.move_to(x+dx*sqx, y+dy*sqy, dz, r, wait = wait)
 
 def get(colour):
+    global greenPop, redPop, bluePop, yellowPop
     if colour == 'green':
         move(-2+mid,-4+mid+greenPop,down)
         greenPop -= 1
@@ -50,9 +47,18 @@ def get(colour):
     device.suck(True)
 
 def place():
-    move(-2+mid, 3+mid, down)
-    move(0, 0, -39)
+    global placePop
+    move(-2+mid, 6+mid, down)
+    #move(-2+mid, 6+mid-placePop, down)
+    move(0, 0, -39+placePop*sqz)
     device.suck(False)
+    placePop += 1
+
+placePop = 0
+greenPop = 0
+redPop = 0
+bluePop = 0
+yellowPop = 0
 
 while True:
     reset()
