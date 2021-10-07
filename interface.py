@@ -1,11 +1,13 @@
 from tkinter import *
 import tkinter.ttk as ttk
 import produktion as p
+import data as d
 
 class UI():
     def __init__(self):
         self.root = Tk()
         self.robot = p.robot()
+        self.data = d.robot_data()
 
         self.TBP = ''
 
@@ -13,7 +15,16 @@ class UI():
         self.Buttonframe.grid(column=0, row = 0)
 
         self.DBframe = Frame(self.root)
-        self.DBframe.grid(column=0, row = 0)
+        self.DBframe.grid(column=1, row = 0)
+
+        i = 0
+        r_set = self.data.get_ordrer()
+        for pallet in r_set:
+            for j in range(len(pallet)):
+                e = Entry(self.DBframe)
+                e.grid(row = i, column = j)
+                e.insert(END, pallet[j])
+            i += 1
 
         self.title = Label(self.Buttonframe, text = "Robot-automation", font=("Arial Bold", 25))
         self.title.grid(column=0, row = 0)
@@ -24,17 +35,29 @@ class UI():
         self.calibrateBut = Button(self.Buttonframe, text = "Calibrate", command = self.cali)
         self.calibrateBut.grid(column = 0, row = 5)
 
-        self.posSubmit = Button(self.Buttonframe, text="Submit position", command = self.submit)
+        self.posSubmit = Button(self.Buttonframe, text="Submit position", command = self.submit_pos)
         self.posSubmit.grid(column = 0, row=6)
 
+        self.newOrderButton = Button(self.Buttonframe, text = "New order pallet", command = self.new).grid(column = 0, row = 7)
+
+        self.producePBut = Button(self.Buttonframe, text="Produce pallet from DB", command = self.pFromDb)
+        self.producePBut.grid(column = 0, row=8)
+
+        self.producePEntry = Entry(self.Buttonframe)
+        self.producePEntry.grid(column = 0, row=9)
+        
         self.root.mainloop()
         #calibrateWindow = Tk()
+
+    def pFromDb(self):
+        list = self.data.produce_palle(self.producePEntry.get())
+        self.robot.produce_pallet(list)
 
     def cali(self):
         self.robot.calibrate(self.calibrateBut)
         #calibrateWindow.mainloop()
 
-    def submit(self):
+    def submit_pos(self):
         self.robot.cvar.set(1)
 
     def produceC(self):
@@ -83,5 +106,41 @@ class UI():
     def pro(self):
         self.robot.produce(self.TBP)
         self.TBP = ''
+
+    def new(self):
+        self.palletW = Toplevel(self.root)
+        self.palletW.title("Create pallet")
+        self.palletW.geometry("680x150")
+
+        self.entries = []
+        self.pName = Entry(self.palletW)
+        self.pName.grid(column = 0, row = 0)
+        self.submitPallet = Button(self.palletW, text = 'Submit', command = self.submit).grid(column = 3, row = 5)
+
+        self.b = Button(self.palletW, text = 'get', command = self.data.get_ordrer)
+        Button(self.palletW, text = 'get', command = self.data.get_ordrer).grid(column = 2, row = 5)
+        n = 0
+
+        for y in range(4):
+            for x in range(4):
+                n += 1
+                field = Entry(self.palletW)
+                field.grid(column = x, row = y+1)
+                self.entries.append(field)
+
+        #print(self.entries)
+
+    def submit(self):
+        self.data.new_order(self.entries, self.pName.get())
+
+        i = 0
+        r_set = self.data.get_ordrer()
+        for pallet in r_set:
+            for j in range(len(pallet)):
+                e = Entry(self.DBframe)
+                e.grid(row = i, column = j)
+                e.insert(END, pallet[j])
+            i += 1
+
 
 ui = UI()
