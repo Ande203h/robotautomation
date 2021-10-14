@@ -45,9 +45,19 @@ class UI():
 
         self.producePEntry = Entry(self.Buttonframe)
         self.producePEntry.grid(column = 0, row=9)
-        
+
+        self.resetBut = Button(self.Buttonframe, text="REE", command = self.reset)
+        self.resetBut.grid(column = 0, row=10)
+
         self.root.mainloop()
-        #calibrateWindow = Tk()
+        #calibrateWindow = Tk(
+
+    def reset(self):
+        self.robot.placePop = 0
+        self.robot.greenPop = 0
+        self.robot.redPop = 0
+        self.robot.bluePop = 0
+        self.robot.yellowPop = 0
 
     def pFromDb(self):
         list = self.data.produce_palle(self.producePEntry.get())
@@ -141,6 +151,8 @@ class UI():
                 e.grid(row = i, column = j)
                 e.insert(END, pallet[j])
             i += 1
+def main():
+    ui = UI()
 
-
-ui = UI()
+if __name__ == "__main__":
+    main()
