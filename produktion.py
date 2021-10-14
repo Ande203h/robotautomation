@@ -5,8 +5,6 @@ import pyautogui
 
 import tkinter as tk
 
-import random
-
 class robot(object):
     def __init__(self):
         self.available_ports = list_ports.comports()
@@ -101,32 +99,47 @@ class robot(object):
         self.reset()
         self.move(1+self.midx, 6+self.midy, self.down-39)
         button.wait_variable(self.cvar)
+        #place pallets left upper corner
         self.reset()
         self.move(1+self.midx-3, 6+self.midy-3, self.down-39)
         button.wait_variable(self.cvar)
+        #and finally, resets, ready for use
         self.reset()
 
-    def produce(self, tuplet):
+    def produce(self, string):
+        #starts by resetting
         self.reset()
-        print(tuplet)
-        for i in tuplet:
-            print("getting " + i)
-            self.get(i)
-            print("resetting")
+        #prints the string that contains the order
+        #gets and places a cube, determined by the string
+        if string:
+            for i in string:
+                print("Order to be produced:", string)
+                if i in ['g','r','y','b'] or string > 4:
+                    print("getting " + i)
+                    self.get(i)
+                    print("resetting")
+                    self.reset()
+                    print("placing")
+                    self.place()
+                    print("resetting")
+                    self.reset()
+            else:
+                if self.row >= 4:
+                    self.row = 0
+                    self.column += 1
+                self.reset()
+        else:
+            if self.row >= 4:
+                self.row = 0
+                self.column += 1
             self.reset()
-            print("placing")
-            self.place()
-            print("resetting")
-            self.reset()
-        print(self.row, self.column)
+        #goes to next row
         self.row += 1
         self.placePop = 0
 
+
     def produce_pallet(self, list):
-        print("list:")
-        print(list)
+        #breaks up the order from the DB what is to be produced
         for tuplet in list:
-            print("tuplet:")
-            print(tuplet)
             for string in tuplet:
                 self.produce(string)
